@@ -93,7 +93,7 @@ if($userStud){
 		
 	}
 }
-
+ 
 
  	# code...
 // unset($_SESSION['STUDID']);
@@ -114,12 +114,9 @@ if($userStud){
 // unset($_SESSION['USER_NAME']);
 // unset($_SESSION['PASS']); 
 
-
-  
-
-	
  }
-}
+ }
+
 
 
 	$currentyear = date('Y');
@@ -216,7 +213,35 @@ if($userStud){
 </div>
 
 
-<form onsubmit="return validateUsername() && validatePassword()" action="" class="form-horizontal well" method="post" >
+<li class="list-group-item text-right">
+    <span class="pull-left"><strong>Enrollment Status</strong></span> 
+
+    <?php 
+        $mydb->setQuery("SELECT * FROM `tblsemester`");
+        $cur = $mydb->loadResultList();
+
+        foreach ($cur as $result) {
+            if (!isset($result->estatus) || empty($result->estatus)) {
+                echo '<span style="color: red;">Closed</span>';
+            } else {
+                if ($result->estatus == 'Open') {
+                    echo '<span style="color: green;">' . $result->estatus . '</span>';
+                } else {
+                    echo '<span style="color: red;">' . $result->estatus . '</span>';
+                }
+            }
+        }
+    ?> 
+</li>
+
+
+
+<?php
+// Check if the enrollment status is 'Open'
+if (isset($result->estatus) && $result->estatus == 'Open') {
+    // Display your enrollment form here
+    ?>
+  <form onsubmit="return validateUsername() && validatePassword()" action="" class="form-horizontal well" method="post" >
 <!-- <form action="index.php?q=subject" class="form-horizontal well" method="post" > -->
 	<div class="table-responsive">
 	<div class="col-md-8"><h2><img style="width: 60px; height: 60px; margin-top: -30px;" src="img/logonbg.png" alt="">Enrollment Form</h2></div>
@@ -482,4 +507,31 @@ if($userStud){
 		</table>
 	</div>
 </form>
+<?php
+}else{
+      // If enrollment is closed, display a modal
+    ?>
+	 <!-- Modal -->
+	 <div id="enrollmentClosedModal" class="modal" style="display: block;">
+        <div sytle="height: 100px;" class="modal-content">
+            <span class="close" onclick="document.getElementById('enrollmentClosedModal').style.display='none'">&times;</span>
+            <p sytle="color: red;">Enrollment is closed. Please check back later.</p>
+        </div>
+    </div>
 
+    <script>
+        // Close modal when the close button (×) is clicked
+        document.getElementsByClassName('close')[0].addEventListener('click', function () {
+            document.getElementById('enrollmentClosedModal').style.display = 'none';
+        });
+
+        // Close modal when clicking outside the modal content
+        window.addEventListener('click', function (event) {
+            if (event.target == document.getElementById('enrollmentClosedModal')) {
+                document.getElementById('enrollmentClosedModal').style.display = 'none';
+            }
+        });
+    </script>
+<?php
+}
+?>

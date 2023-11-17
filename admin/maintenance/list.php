@@ -51,4 +51,78 @@
 				</form>
 	
 
-</div> <!---End of container-->
+</div> <!---End of container-->'
+<li class="list-group-item text-right">
+    <span class="pull-left"><strong>Enrollment Status</strong></span> 
+    <?php 
+        if (!isset($result->estatus) || empty($result->estatus)) {
+            echo '<span style="color: red;">Open</span>';
+            echo'empy file';
+        } else {
+            if ($result->estatus == 'Open') {
+                echo '<span style="color: green;">' . $result->estatus . '</span>';
+            } else {
+                echo '<span style="color: red;">' . $result->estatus . '</span>';
+            }
+        }
+    ?> 
+</li>
+
+<form method="post" >
+    <tr>
+        <td></td>
+        <td colspan="5">  
+            <div class="form-group">
+                <label for="estatus" class="col-sm-2 control-label">Enrollment Status</label>
+                <div class="col-sm-10">
+                    <select class="form-control" id="estatus" name="estatus">
+                        <option value="Open">Open</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    <button  type="submit" name="submit" class="btn btn-primary">Update Status</button>
+                </div>
+            </div>
+        </td>
+    </tr>
+</form>
+
+<?php
+// Assuming $mydb is properly instantiated and connected
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['submit'])) {
+        if (isset($_POST['estatus'])) {
+            $estatus = $_POST['estatus'];
+
+            // Use prepared statements to prevent SQL injection
+            $query = "UPDATE tblsemester SET estatus =  '$estatus'  WHERE SEMID ";
+            $stmt = mysqli_prepare($mydb->conn, $query);
+            
+            $result = mysqli_stmt_execute($stmt);
+
+            if ($result) {
+                echo '<div class="alert alert-success" role="alert">Enrollment status has been updated successfully!</div>';
+            } else {
+                echo '<div class="alert alert-danger" role="alert">Failed to update enrollment status. Please try again!</div>';
+            }
+
+            // Close the prepared statement
+			mysqli_close($mydb->conn);
+        } else {
+            echo '<div class="alert alert-danger" role="alert">Enrollment status is required!</div>';
+        }
+    }
+}
+?>
+
+
+
+
+
+
+	
+
